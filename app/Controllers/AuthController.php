@@ -3,69 +3,71 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\UserModel;
 
 class AuthController extends BaseController
 {
-        //Fungsi ini otomatis dijalankan saat objek dibuat, dan berfungsi untuk mengaktifkan fitur-fitur bantuan form di CodeIgniter.
-        function __construct()
-        {
-            helper('form');
-        }
-        //untuk membuat hash password
-        public function generatepassword()
-        {
-            echo password_hash('123', PASSWORD_DEFAULT);
-        }
+    protected $user;
 
-        //menghapus session dan mengarahkan user ke halaman login, sehingga digunakan untuk proses logout dalam aplikasi.
-        public function logout()
-        {
-            session()->destroy();
-            return redirect()->to('/login');
-        }
+    function __construct()
+    {
+        helper('form');
+        $this->user = new UserModel();  
+    }
 
+    
+    public function logout()
+    {
+        session()->destroy();  
+        return redirect()->to('/login'); 
+    }
 
-        public function login()
-        {
-        // Jika ada request POST (form login dikirimkan)
+    public function login()
+    {
         if ($this->request->getPost()) {
-            // Ambil username dan password dari form login
-            $username = $this->request->getVar('username');
-            $password = $this->request->getVar('password');
+            $rules = [
+                'username' => 'required|min_length[6]',
+                'password' => 'required|min_length[7]|numeric',  
+            ];
 
-            // Membaca file JSON yang berisi data pengguna
-            $users = json_decode(file_get_contents(WRITEPATH . 'users.json'), true);
+            
+            if ($this->validate($rules)) {
+                $username = $this->request->getVar('username');
+                $password = $this->request->getVar('password');
 
-            // Mencari user berdasarkan username
-            foreach ($users as $user) {
-                if ($user['username'] == $username) {
-                    // Verifikasi password menggunakan password_verify
-                    if (password_verify($password, $user['password'])) {
-                        // Jika berhasil login, set session
+                
+                $dataUser = $this->user->getUserByUsername($username);
+
+                if ($dataUser) {
+                   
+                    if (password_verify($password, $dataUser['password'])) {
+                        
                         session()->set([
-                            'username' => $user['username'],
-                            'role' => $user['role'],
-                            'isLoggedIn' => true
+                            'username' => $dataUser['username'],
+                            'role' => $dataUser['role'],
+                            'isLoggedIn' => TRUE
                         ]);
 
-                        // Redirect ke dashboard sesuai dengan role
-                        return redirect()->to($user['role'] == 'admin' ? '/admin' : '/user');
+                       
+                        return redirect()->to('/home');  
                     } else {
-                        // Jika password salah
-                        session()->setFlashdata('failed', 'Password Salah');
+                    
+                        session()->setFlashdata('failed', 'Kombinasi Username & Password Salah');
                         return redirect()->back();
                     }
+                } else {
+                 
+                    session()->setFlashdata('failed', 'Username Tidak Ditemukan');
+                    return redirect()->back();
                 }
+            } else {
+              
+                session()->setFlashdata('failed', $this->validator->listErrors());
+                return redirect()->back();
             }
-
-            // Jika username tidak ditemukan
-            session()->setFlashdata('failed', 'Username Tidak Ditemukan');
-            return redirect()->back();
-        } else {
-            // Menampilkan halaman login jika tidak ada request POST
-            return view('v_login');
         }
-      }
 
+ 
+        return view('v_login');
+    }
 }
