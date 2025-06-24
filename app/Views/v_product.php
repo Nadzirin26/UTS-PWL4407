@@ -88,6 +88,11 @@ if (session()->getFlashData('failed')) {
                                     <label for="name">Jumlah</label>
                                     <input type="text" name="jumlah" class="form-control" id="jumlah" value="<?= $product['jumlah'] ?>" placeholder="Jumlah Barang" required>
                                 </div>
+                                <div class="form-group">
+                                    <label for="weight">Berat (gram)</label>
+                                    <input type="number" name="weight" class="form-control" id="weight" value="<?= $product['weight'] ?>" required>
+                                </div>
+
                                 <img src="<?php echo base_url() . "img/" . $product['foto'] ?>" width="100px">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="check" name="check" value="1">
@@ -137,6 +142,11 @@ if (session()->getFlashData('failed')) {
                         <label for="name">Jumlah</label>
                         <input type="text" name="jumlah" class="form-control" id="jumlah" placeholder="Jumlah Barang" required>
                     </div>
+                    <div class="form-group">
+                        <label for="weight">Berat (gram)</label>
+                        <input type="number" name="weight" class="form-control" id="weight" placeholder="Berat Barang (gram)" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="name">Foto</label>
                         <input type="file" class="form-control" id="foto" name="foto">

@@ -30,6 +30,7 @@ class ProductController extends BaseController
             'nama' => $this->request->getPost('nama'),
             'harga' => $this->request->getPost('harga'),
             'jumlah' => $this->request->getPost('jumlah'),
+            'weight' => $this->request->getPost('weight'),
             'created_at' => date("Y-m-d H:i:s")
         ];
 
@@ -52,6 +53,7 @@ class ProductController extends BaseController
             'nama' => $this->request->getPost('nama'),
             'harga' => $this->request->getPost('harga'),
             'jumlah' => $this->request->getPost('jumlah'),
+            'weight' => $this->request->getPost('weight'),
             'updated_at' => date("Y-m-d H:i:s")
         ];
 
